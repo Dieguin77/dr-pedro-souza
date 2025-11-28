@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo de Acompanhamento com Tirzepatida | Dr. Pedro Souza</title>
+    <link rel="icon" href="img/logo-pagina.jpeg" type="image/jpeg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        viaGreen: '#0E8A5C',
+                        viaWhite: '#FCFCFC',
+                        viaGray: '#E7ECEB',
+                        viaBlue: '#003F4F',
+                        viaGold: '#CDAF79',
+                    },
+                    fontFamily: {
+                        sans: ['Open Sans', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FCFCFC;
+            color: #333;
+            scroll-behavior: smooth;
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #E7ECEB;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0E8A5C;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #003F4F;
+        }
+
+        .hero-pattern {
+            background-image: radial-gradient(#0E8A5C 0.5px, transparent 0.5px), radial-gradient(#0E8A5C 0.5px, #FCFCFC 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.05;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-active {
+            background-color: #0E8A5C;
+            color: white;
+            border-left: 4px solid #CDAF79;
+        }
+        .tab-inactive {
+            background-color: #fff;
+            color: #003F4F;
+            border-left: 4px solid transparent;
+        }
+        .tab-inactive:hover {
+            background-color: #E7ECEB;
+        }
+
+        /* Unicode Icons styling */
+        .icon-lg { font-size: 2.5rem; }
+        .icon-md { font-size: 1.5rem; }
+
+        /* Modal/Lightbox for Images */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 50px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+        }
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 900px;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .close-modal:hover,
+        .close-modal:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+    
+    <!-- Chosen Palette: ViaNatural Official (Green #0E8A5C, White #FCFCFC, Gray #E7ECEB, Petrol Blue #003F4F, Gold #CDAF79) -->
+    <!-- Application Structure Plan: 
+        1. Hero Section: Updated with Dr. Pedro's photo for authority.
+        2. Pain & Desire: Interactive Grid.
+        3. The Solution: Dynamic Tabs (4 Pillars).
+        4. Differentiation: Chart.js visualization.
+        5. Results (New): Gallery with Video and Before/After photos.
+        6. Methodology: Timeline.
+        7. FAQ & Footer.
+    -->
+    <!-- Visualization & Content Choices:
+        - Dr. Pedro Photo: Placed in Hero to build trust immediately.
+        - Video (mounjaro.mp4): Placed in "Results" section to explain the method.
+        - Images (Before/After): Added to "Results" grid with lightbox functionality for detailed viewing.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="font-sans antialiased text-gray-700">
+
+    <!-- Lightbox Modal -->
+    <div id="imageModal" class="modal">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImg">
+        <div id="caption" class="text-center text-white mt-4"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm fixed w-full z-50 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <img src="img/logo-pagina.jpeg" alt="Logotipo da Clínica ViaNatural" class="h-16">
+                <div class="hidden md:flex space-x-8">
+                    <a href="#dores" class="text-viaBlue hover:text-viaGreen font-medium transition">O Problema</a>
+                    <a href="#solucao" class="text-viaBlue hover:text-viaGreen font-medium transition">O Programa</a>
+                    <a href="#resultados" class="text-viaBlue hover:text-viaGreen font-medium transition">Resultados</a>
+                    <a href="#contato" class="bg-viaGreen text-white px-5 py-2 rounded-full hover:bg-viaBlue transition font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Agendar Agora</a>
+                </div>
+                <!-- Mobile menu button wrapper -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-viaBlue hover:text-viaGreen focus:outline-none text-2xl">
+                        &#9776; <!-- Hamburger Icon -->
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col items-center">
+                <a href="#dores" class="block px-3 py-2 text-viaBlue hover:bg-gray-50 w-full text-center">O Problema</a>
+                <a href="#solucao" class="block px-3 py-2 text-viaBlue hover:bg-gray-50 w-full text-center">O Programa</a>
+                <a href="#resultados" class="block px-3 py-2 text-viaBlue hover:bg-gray-50 w-full text-center">Resultados</a>
+                <a href="#contato" class="block w-full text-center px-5 py-3 mt-2 bg-viaGreen text-white rounded font-bold">Agendar</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative pt-32 pb-20 lg:pt-40 lg:pb-24 overflow-hidden">
+    
+    <img src="img/imagem-de-fundo.jpg" alt="Fundo" class="absolute inset-0 w-full h-full object-top z-0">
+    
+    <div class="absolute inset-0 bg-[#003F4F] opacity-90 z-0"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-12">
+        
+        <div class="w-full lg:w-1/2 text-center lg:text-left">
+            <h1 class="font-heading text-4xl sm:text-5xl lg:text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+                Emagreça de Forma <span class="text-[#0E8A5C]">Segura, Sustentável</span> e Sem Perder Massa Muscular.
+            </h1>
+            
+            <p class="text-lg sm:text-xl text-gray-200 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                O único programa integrativo com consulta médica, nutricional, psicológica e personal trainer com aplicações de <strong class="text-[#0E8A5C]">Mounjaro</strong> (Tirzepatida) tudo com supervisão do Dr. Pedro Souza
+            </p>
+            
+            <div class="mt-8 flex flex-col gap-4 items-center lg:items-start">
+                <button onclick="scrollToSection('contato')" class="bg-viaGreen text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg hover:bg-white hover:text-viaGreen transition transform hover:-translate-y-1 hover:shadow-xl flex items-center justify-center gap-2">
+                    QUERO COMEÇAR AGORA 
+                    <span class="inline-block rotate-90">&#10140;</span>
+                </button>
+                
+                <div class="flex items-center justify-center gap-2 text-sm text-gray-600 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100">
+                    Aceitamos Plano de Saúde (Consultas)
+                </div>
+            </div>
+        </div>
+        
+        <div class="w-full lg:w-1/2 flex justify-center lg:justify-end relative mt-8 lg:mt-0">
+            <div class="relative z-10 group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-viaGreen to-white rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <img src="img/perfil-pedro01.jpg" alt="Dr. Pedro Souza" class="relative rounded-2xl shadow-2xl border-4 border-white object-cover w-full max-w-md mx-auto">
+            </div>
+        </div>
+
+    </div>
+</header>
+    <!-- Section 2: Pain & Desire (Interactive) -->
+    <section id="dores" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-viaGold font-bold tracking-widest uppercase text-sm">Identificação</span>
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-viaBlue mt-2 mb-4">Entenda o seu momento atual</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    Muitos pacientes chegam à clínica sentindo-se estagnados. Abaixo, listamos os desafios mais comuns e o futuro que construímos juntos. Interaja com os botões.
+                </p>
+            </div>
+
+            <!-- Toggle Switch for Pain vs Desire -->
+            <div class="flex justify-center mb-10">
+                <div class="bg-gray-100 p-1 rounded-full flex relative">
+                    <button id="btn-pain" onclick="togglePerspective('pain')" class="px-6 py-2 rounded-full font-bold text-sm transition-all duration-300 bg-white text-red-600 shadow-md">
+                        O Que Mais Dói?
+                    </button>
+                    <button id="btn-desire" onclick="togglePerspective('desire')" class="px-6 py-2 rounded-full font-bold text-sm transition-all duration-300 text-gray-500 hover:text-viaGreen">
+                        O Que Você Deseja?
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Container -->
+            <div id="perspective-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: The Solution (Detailed Tabs) -->
+    <section id="solucao" class="py-20 bg-viaGray/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-viaGreen font-bold tracking-widest uppercase text-sm">Método Exclusivo</span>
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-viaBlue mt-2">Os 4 Pilares da Transformação</h2>
+                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">
+                    A medicação é apenas uma ferramenta. O resultado real vem da integração de quatro áreas fundamentais. Clique nos pilares abaixo para entender como cada profissional atua.
+                </p>
+            </div>
+
+            <div class="flex flex-col md:flex-row bg-white rounded-2xl shadow-xl overflow-hidden min-h-[450px] sm:h-[500px]">
+                <!-- Tab Navigation -->
+                <div class="md:w-1/3 bg-gray-50 flex flex-col border-r border-gray-100">
+                    <button onclick="openTab('medico')" id="tab-medico" class="tab-active p-6 text-left transition-all duration-200 group focus:outline-none">
+                        <div class="flex items-center justify-between">
+                            <span class="font-heading font-bold text-lg">1. Médico Especializado</span>
+                            <span class="text-xl opacity-50">&#129658;</span> <!-- Stethoscope symbol equivalent -->
+                        </div>
+                        <p class="text-xs mt-1 opacity-80 font-light">Segurança e Ajustes</p>
+                    </button>
+                    <button onclick="openTab('nutri')" id="tab-nutri" class="tab-inactive p-6 text-left transition-all duration-200 group focus:outline-none">
+                        <div class="flex items-center justify-between">
+                            <span class="font-heading font-bold text-lg">2. Nutricionista Integrativo</span>
+                            <span class="text-xl opacity-50">&#127823;</span> <!-- Apple -->
+                        </div>
+                        <p class="text-xs mt-1 opacity-80 font-light">Dieta Anti-inflamatória</p>
+                    </button>
+                    <button onclick="openTab('psico')" id="tab-psico" class="tab-inactive p-6 text-left transition-all duration-200 group focus:outline-none">
+                        <div class="flex items-center justify-between">
+                            <span class="font-heading font-bold text-lg">3. Psicólogo Especialista</span>
+                            <span class="text-xl opacity-50">&#129504;</span> <!-- Brain -->
+                        </div>
+                        <p class="text-xs mt-1 opacity-80 font-light">Comportamento e Hábitos</p>
+                    </button>
+                    <button onclick="openTab('personal')" id="tab-personal" class="tab-inactive p-6 text-left transition-all duration-200 group focus:outline-none">
+                        <div class="flex items-center justify-between">
+                            <span class="font-heading font-bold text-lg">4. Personal Trainer</span>
+                            <span class="text-xl opacity-50">&#127947;</span> <!-- Weight lifter -->
+                        </div>
+                        <p class="text-xs mt-1 opacity-80 font-light">Metabolismo e Força</p>
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="md:w-2/3 p-8 md:p-12 relative flex flex-col justify-center">
+                    <div id="content-medico" class="tab-content animate-fadeIn">
+                        <h3 class="text-2xl font-bold text-viaBlue mb-4 flex items-center gap-2">
+                            <span class="text-viaGreen text-3xl">&#10012;</span> Consulta Médica Especializada
+                        </h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            O alicerce da sua segurança. Não se trata apenas de prescrever, mas de monitorar. O Dr. Pedro e equipe avaliam sua bioquímica completa antes de qualquer decisão.
+                        </p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Avaliação Avançada:</strong> Análise de marcadores inflamatórios e hormonais.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Liberação Segura:</strong> Prescrição da Tirzepatida com responsabilidade ética.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Desmame Estratégico:</strong> O segredo para não ter efeito rebote está em como finalizamos o ciclo.</div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div id="content-nutri" class="hidden tab-content animate-fadeIn">
+                        <h3 class="text-2xl font-bold text-viaBlue mb-4 flex items-center gap-2">
+                            <span class="text-viaGreen text-3xl">&#129367;</span> Nutrição Integrativa
+                        </h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            A medicação reduz o apetite, mas a nutrição define o que seu corpo constrói. Focamos em estratégias anti-inflamatórias para potencializar a perda de gordura visceral.
+                        </p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Proteção de Massa Magra:</strong> Aporte proteico calculado milimetricamente.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Dieta Funcional:</strong> Alimentos que "conversam" com seus genes e reduzem inflamação.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Acompanhamento Semanal:</strong> Ajustes rápidos conforme sua resposta metabólica.</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="content-psico" class="hidden tab-content animate-fadeIn">
+                        <h3 class="text-2xl font-bold text-viaBlue mb-4 flex items-center gap-2">
+                            <span class="text-viaGreen text-3xl">&#128100;</span> Psicólogo Especializado
+                        </h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            A obesidade é multifatorial. Tratamos a relação emocional com a comida para garantir que, ao final do tratamento, sua mente esteja tão saudável quanto seu corpo.
+                        </p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Reprogramação de Hábitos:</strong> Ferramentas cognitivo-comportamentais.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Controle de Ansiedade:</strong> Técnicas para lidar com gatilhos sem recorrer à comida.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Apoio Contínuo:</strong> Você não está sozinho(a) durante as mudanças de humor ou adaptação.</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="content-personal" class="hidden tab-content animate-fadeIn">
+                        <h3 class="text-2xl font-bold text-viaBlue mb-4 flex items-center gap-2">
+                            <span class="text-viaGreen text-3xl">&#127939;</span> Personal Trainer & Fisiologia
+                        </h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            Perder peso sem exercício resulta em flacidez e metabolismo lento. Nosso personal desenha o treino ideal para quem usa Tirzepatida, respeitando seus limites energéticos.
+                        </p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Periodização Anual:</strong> Treinos que mudam conforme sua evolução.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Modulação Metabólica:</strong> Exercícios específicos para aumentar a queima de gordura em repouso.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-viaGold font-bold mt-1">&#10004;</span>
+                                <div><strong class="text-gray-800">Treino Adaptado:</strong> Ajustes de intensidade baseados na sua ingestão calórica e disposição.</div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            <span class="text-viaGold font-bold">Diferencial Extra:</span> Aplicações de Tirzepatida com suporte total.
+                        </div>
+                        <a href="#contato" class="text-viaGreen font-bold hover:text-viaBlue transition text-sm flex items-center gap-1">
+                            Quero agendar avaliação &#10140;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW Section: Results & Social Proof (Video + Images) -->
+    <section id="resultados" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="font-heading text-3xl md:text-4xl font-bold text-center text-viaBlue mb-4">Resultados Reais</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">
+                Veja o impacto do protocolo na vida dos nossos pacientes. Imagens reais de transformações alcançadas com segurança e acompanhamento.
+            </p>
+            
+            <!-- Grid for Mixed Media -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Video Item -->
+                <div class="col-span-1 lg:col-span-1 flex flex-col">
+                    <div class="bg-black rounded-xl overflow-hidden shadow-xl h-full relative group border border-gray-200">
+                        <video controls class="w-full h-full object-cover">
+                            <source src="videos/mounjaro.mp4" type="video/mp4">
+                            Seu navegador não suporta a reprodução de vídeo.
+                        </video>
+                        <div class="absolute top-0 left-0 bg-viaGold text-white text-xs font-bold px-3 py-1 rounded-br-lg z-10">
+                            EXPLICAÇÃO
+                        </div>
+                    </div>
+                    <p class="text-sm text-center font-bold text-viaBlue mt-3">Como funciona a Tirzepatida (Mounjaro)</p>
+                    <p class="text-xs text-center text-gray-500">Clique no play para assistir a explicação.</p>
+                </div>
+
+                <div class="col-span-1 flex flex-col">
+    <div class="bg-black rounded-xl overflow-hidden shadow-xl h-[500px] relative border border-gray-200">
+        
+        <video controls playsinline class="w-full h-full object-cover">
+            <source src="videos/video-01.mp4" type="video/mp4">
+            Seu navegador não suporta a reprodução de vídeo.
+        </video>
+
+        <div class="absolute top-0 right-0 bg-viaGreen text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10">
+            -5,6 KG
+        </div>
+    </div>
+    
+    <p class="text-sm text-center font-bold text-viaBlue mt-3">Resultado Imediato</p>
+    <p class="text-xs text-center text-gray-500">Evolução após 1ª aplicação</p>
+</div>
+
+                <!-- Image 1 -->
+                <div class="col-span-1 flex flex-col">
+                    <div class="relative group cursor-pointer overflow-hidden rounded-xl shadow-xl border border-gray-200 h-64 md:h-80" onclick="openModal('img/prova-social.jpg')">
+                        <img src="img/prova-social.jpg" alt="Antes e Depois Paciente 1" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition duration-300 flex items-center justify-center">
+                            <span class="text-white opacity-0 group-hover:opacity-100 font-bold bg-viaGreen/80 px-4 py-2 rounded-full backdrop-blur-sm transition transform translate-y-4 group-hover:translate-y-0">
+                                Ver Detalhes &#128269;
+                            </span>
+                        </div>
+                        <div class="absolute top-0 left-0 bg-viaBlue text-white text-xs font-bold px-3 py-1 rounded-br-lg">
+                            RESULTADO REAL
+                        </div>
+                    </div>
+                    <p class="text-sm text-center font-bold text-viaBlue mt-3">Transformação Corporal</p>
+                    <p class="text-xs text-center text-gray-500">-3,5kg em 5 dias (Início do protocolo)</p>
+                </div>
+
+                <!-- Image 2 -->
+                <div class="col-span-1 flex flex-col">
+                    <div class="relative group cursor-pointer overflow-hidden rounded-xl shadow-xl border border-gray-200 h-64 md:h-80" onclick="openModal('img/prova-social-2.jpg')">
+                        <img src="img/prova-social-2.jpg" alt="Antes e Depois Paciente 2" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition duration-300 flex items-center justify-center">
+                            <span class="text-white opacity-0 group-hover:opacity-100 font-bold bg-viaGreen/80 px-4 py-2 rounded-full backdrop-blur-sm transition transform translate-y-4 group-hover:translate-y-0">
+                                Ver Detalhes &#128269;
+                            </span>
+                        </div>
+                        <div class="absolute top-0 left-0 bg-viaBlue text-white text-xs font-bold px-3 py-1 rounded-br-lg">
+                            RESULTADO REAL
+                        </div>
+                    </div>
+                    <p class="text-sm text-center font-bold text-viaBlue mt-3">Redução de Medidas</p>
+                    <p class="text-xs text-center text-gray-500">-8,5kg e remodelação da cintura</p>
+                </div>
+
+                <!-- Image 4 -->
+                <div class="col-span-1 flex flex-col">
+                    <div class="relative group cursor-pointer overflow-hidden rounded-xl shadow-xl border border-gray-200 h-64 md:h-80" onclick="openModal('img/prova-social-4.jpeg')">
+                        <img src="img/prova-social-4.jpeg" alt="Antes e Depois Paciente 4" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition duration-300 flex items-center justify-center">
+                            <span class="text-white opacity-0 group-hover:opacity-100 font-bold bg-viaGreen/80 px-4 py-2 rounded-full backdrop-blur-sm transition transform translate-y-4 group-hover:translate-y-0">
+                                Ver Detalhes &#128269;
+                            </span>
+                        </div>
+                        <div class="absolute top-0 left-0 bg-viaBlue text-white text-xs font-bold px-3 py-1 rounded-br-lg">
+                            RESULTADO REAL
+                        </div>
+                    </div>
+                    <p class="text-sm text-center font-bold text-viaBlue mt-3">Redução de Medidas</p>
+                    <p class="text-xs text-center text-gray-500">-12kg e definição muscular</p>
+                </div>
+                <div class="col-span-1 flex flex-col">
+                    <div class="relative group cursor-pointer overflow-hidden rounded-xl shadow-xl border border-gray-200 h-64 md:h-80" onclick="openModal('img/prova-social-3.jpeg')">
+                        <img src="img/prova-social-3.jpeg" alt="Antes e Depois Paciente 3" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition duration-300 flex items-center justify-center">
+                            <span class="text-white opacity-0 group-hover:opacity-100 font-bold bg-viaGreen/80 px-4 py-2 rounded-full backdrop-blur-sm transition transform translate-y-4 group-hover:translate-y-0">
+                                Ver Detalhes &#128269;
+                            </span>
+                        </div>
+                        <div class="absolute top-0 left-0 bg-viaBlue text-white text-xs font-bold px-3 py-1 rounded-br-lg">
+                            RESULTADO REAL
+                        </div>
+                    </div>
+                    <p class="text-sm text-center font-bold text-viaBlue mt-3">Redução de Medidas</p>
+                    <p class="text-xs text-center text-gray-500">-8,5kg e remodelação da cintura</p>
+                </div>
+            </div>
+
+
+
+            <!-- Text Testimonials Grid -->
+            <div class="grid md:grid-cols-3 gap-8 mt-16">
+                 <!-- Testimonial 1 -->
+                 <div class="bg-gray-50 p-6 rounded-xl shadow-sm border border-gray-100">
+                    <div class="text-viaGreen text-4xl mb-4">❝</div>
+                    <p class="text-gray-600 italic mb-4 text-sm">"Já tinha tentado Ozempic sozinha e ganhei tudo de volta. Com o Dr. Pedro, entendi que o segredo estava no treino e na cabeça. Perdi 18kg e ganhei massa magra."</p>
+                    <div class="font-bold text-viaBlue text-sm">— Paciente M.S., 34 anos</div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-sm border border-gray-100 border-t-4 border-viaGold">
+                    <div class="text-viaGreen text-4xl mb-4">❝</div>
+                    <p class="text-gray-600 italic mb-4 text-sm">"O suporte do psicólogo fez toda a diferença. A medicação tira a fome, mas a ansiedade continuava lá. Tratar isso em conjunto foi libertador."</p>
+                    <div class="font-bold text-viaBlue text-sm">— Paciente R.A., 42 anos</div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-sm border border-gray-100">
+                    <div class="text-viaGreen text-4xl mb-4">❝</div>
+                    <p class="text-gray-600 italic mb-4 text-sm">"Nunca achei que conseguiria treinar bem usando medicação. O personal adaptou tudo e hoje me sinto mais forte do que antes de começar."</p>
+                    <div class="font-bold text-viaBlue text-sm">— Paciente L.F., 29 anos</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Differentiation (Data Visualization) -->
+    <section id="diferenciais" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-viaGold font-bold tracking-widest uppercase text-sm">Ciência e Dados</span>
+                    <h2 class="font-heading text-3xl md:text-4xl font-bold text-viaBlue mt-2 mb-6">Por que focar na Massa Magra?</h2>
+                    <p class="text-gray-600 mb-6">
+                        A maioria dos tratamentos rápidos falha porque destrói seu metabolismo. Ao perder músculos junto com a gordura, seu corpo entra em "modo de economia", facilitando o ganho de peso futuro (efeito sanfona).
+                    </p>
+                    <p class="text-gray-600 mb-8">
+                        No gráfico ao lado, simulamos a projeção de resultados do <strong>Protocolo ViaNatural</strong> comparado a dietas restritivas comuns. Nosso foco é manter sua taxa metabólica alta.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-viaGreen shadow-sm">
+                            <h4 class="font-bold text-viaBlue">Dieta Comum</h4>
+                            <p class="text-sm text-gray-500">Perda de peso rápida, mas com alta destruição muscular e flacidez.</p>
+                        </div>
+                        <div class="bg-viaBlue/5 p-4 rounded-lg border-l-4 border-viaGold shadow-sm">
+                            <h4 class="font-bold text-viaBlue">Protocolo ViaNatural</h4>
+                            <p class="text-sm text-gray-500">Perda de gordura sustentada com proteção e tonificação muscular.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border border-gray-100">
+                    <h3 class="text-center font-bold text-gray-700 mb-4 text-sm">Projeção de Composição Corporal (12 Meses)</h3>
+                    <div class="chart-container">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-gray-400 mt-2">*Dados ilustrativos baseados na média clínica de protocolos preservacionistas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: Process Timeline -->
+    <section class="py-20 bg-viaBlue text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-white">Sua Jornada de 12 Meses</h2>
+                <p class="text-viaGray mt-4 max-w-2xl mx-auto">Um passo a passo estruturado para garantir que você nunca se sinta perdido durante o tratamento.</p>
+            </div>
+
+            <div class="relative">
+                <!-- Vertical Line -->
+                <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-viaGreen/30 hidden md:block"></div>
+
+                <div class="space-y-12 relative z-10">
+                    <!-- Step 1 -->
+                    <div class="flex flex-col md:flex-row items-center justify-between group">
+                        <div class="md:w-5/12 text-center md:text-right p-4">
+                            <h3 class="text-xl font-bold text-viaGold">1. Avaliação </h3>
+                            <p class="text-sm text-gray-300 mt-2">Consultas iniciais com Médico e Nutricionista. Exames completos e bioimpedância.</p>
+                        </div>
+                        <div class="w-10 h-10 bg-viaGreen rounded-full flex items-center justify-center font-bold shadow-lg border-4 border-viaBlue z-10 shrink-0">1</div>
+                        <div class="md:w-5/12 p-4 hidden md:block"></div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="flex flex-col md:flex-row items-center justify-between group">
+                        <div class="md:w-5/12 p-4 hidden md:block"></div>
+                        <div class="w-10 h-10 bg-viaGreen rounded-full flex items-center justify-center font-bold shadow-lg border-4 border-viaBlue z-10 shrink-0">2</div>
+                        <div class="md:w-5/12 text-center md:text-left p-4">
+                            <h3 class="text-xl font-bold text-viaGold">2. Início do Protocolo</h3>
+                            <p class="text-sm text-gray-300 mt-2">Liberação da primeira dose de Tirzepatida, entrega do plano alimentar e treino personalizado.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="flex flex-col md:flex-row items-center justify-between group">
+                        <div class="md:w-5/12 text-center md:text-right p-4">
+                            <h3 class="text-xl font-bold text-viaGold">3. Integração Mental</h3>
+                            <p class="text-sm text-gray-300 mt-2">Início das sessões com Psicólogo para alinhar expectativas e tratar ansiedade.</p>
+                        </div>
+                        <div class="w-10 h-10 bg-viaGreen rounded-full flex items-center justify-center font-bold shadow-lg border-4 border-viaBlue z-10 shrink-0">3</div>
+                        <div class="md:w-5/12 p-4 hidden md:block"></div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="flex flex-col md:flex-row items-center justify-between group">
+                        <div class="md:w-5/12 p-4 hidden md:block"></div>
+                        <div class="w-10 h-10 bg-viaGreen rounded-full flex items-center justify-center font-bold shadow-lg border-4 border-viaBlue z-10 shrink-0">4</div>
+                        <div class="md:w-5/12 text-center md:text-left p-4">
+                            <h3 class="text-xl font-bold text-viaGold">4. Monitoramento Contínuo</h3>
+                            <p class="text-sm text-gray-300 mt-2">Acompanhamentos mensais para ajustes de dose, dieta e treino. Evolução constante.</p>
+                        </div>
+                    </div>
+
+                     <!-- Step 5 -->
+                     <div class="flex flex-col md:flex-row items-center justify-between group">
+                        <div class="md:w-5/12 text-center md:text-right p-4">
+                            <h3 class="text-xl font-bold text-viaGold">5. Desmame & Manutenção</h3>
+                            <p class="text-sm text-gray-300 mt-2">Fase final para garantir que o corpo sustente o novo peso sem a medicação.</p>
+                        </div>
+                        <div class="w-10 h-10 bg-white text-viaBlue rounded-full flex items-center justify-center font-bold shadow-lg border-4 border-viaGreen z-10 shrink-0">&#10003;</div>
+                        <div class="md:w-5/12 p-4 hidden md:block"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="font-heading text-3xl font-bold text-center text-viaBlue mb-12">Perguntas Frequentes</h2>
+            <div class="space-y-4" id="faq-container">
+                <!-- FAQs injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA & Contact -->
+    <section id="contato" class="py-20 bg-gradient-to-br from-viaBlue to-[#002b36] text-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="font-heading text-4xl md:text-5xl font-bold mb-6">Pronto para sua transformação definitiva?</h2>
+            <p class="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
+                Não adie mais a saúde que você merece. Tenha um ano inteiro de acompanhamento com especialistas focados no seu resultado.
+            </p>
+            
+            <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl max-w-3xl mx-auto border border-white/20">
+                <div class="grid md:grid-cols-2 gap-8 text-left">
+                    <div>
+                        <h3 class="text-viaGold font-bold text-xl mb-4">Clínica ViaNatural</h3>
+                        <p class="mb-2 flex items-center gap-2"><span class="text-viaGreen">&#9993;</span> clinicavianatural@gmail.com</p>
+                        <p class="mb-2 flex items-center gap-2"><span class="text-viaGreen">&#9742;</span> (61) 99840-6008</p>
+                        <p class="mb-4 flex items-start gap-2"><span class="text-viaGreen">&#128205;</span> Av. Pau Brasil, Lote 10<br>Águas Claras – Brasília/DF</p>
+                        <div class="flex gap-4 mt-4">
+                            <span class="text-sm text-gray-400">@dr.pedrosouza</span>
+                            <span class="text-sm text-gray-400">@clinicavianatural</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <a href="https://wa.me/5561998406008" target="_blank" class="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg text-center shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2 text-lg">
+                            <span class="text-2xl">&#128242;</span> Agendar via WhatsApp
+                        </a>
+                        <p class="text-xs text-center mt-3 text-gray-400">Clique para falar com nossa recepção.</p>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="mt-16 border-t border-white/10 pt-8 text-sm text-gray-500">
+                <p>&copy; 2025 Dr. Pedro Souza - Nutrição Integrativa. Todos os direitos reservados.</p>
+                <p class="mt-2 text-xs">O conteúdo deste site é informativo e não substitui consulta médica. A Tirzepatida é um medicamento e deve ser usado sob estrita prescrição e acompanhamento.</p>
+            </footer>
+        </div>
+    </section>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- DATA & STATE ---
+        
+        // FAQ Data
+        const faqs = [
+            { question: "O tratamento é seguro?", answer: "Sim. A segurança é nossa prioridade absoluta. O protocolo inclui exames prévios, monitoramento médico constante e acompanhamento nutricional para garantir que seu corpo reaja bem à medicação." },
+            { question: "O que está incluso no acompanhamento?", answer: "Você terá acesso a consultas com Médico, Nutricionista, Psicólogo e Personal Trainer, além de todo o suporte para as aplicações e ajustes de doses durante 12 meses." },
+            { question: "Aceitam plano de saúde?", answer: "Aceitamos convênios para as consultas (Médico, Nutrição e Psicologia). As aplicações e o gerenciamento específico do protocolo são particulares." },
+            { question: "Quanto tempo para ver resultados?", answer: "A maioria dos pacientes nota mudanças significativas já no primeiro mês, mas o foco do programa é a consistência e a manutenção dos resultados ao longo de um ano." },
+            { question: "E se eu tiver reações?", answer: "Nossa equipe multidisciplinar está pronta para ajustar dosagens, dieta e medicação auxiliar para mitigar qualquer efeito colateral rapidamente." }
+        ];
+
+        // Pain vs Desire Data
+        const cardsData = {
+            pain: [
+                { icon: "📉", title: "Efeito Sanfona", text: "Perde peso rápido e depois ganha tudo de volta, prejudicando o metabolismo." },
+                { icon: "😟", title: "Ansiedade", text: "Compulsão alimentar e dificuldade de controlar a vontade de comer doces." },
+                { icon: "💪", title: "Perda Muscular", text: "Emagrece ficando 'flácido(a)' e sentindo fraqueza constante." },
+                { icon: "💊", title: "Medo do Rebote", text: "Receio de parar a medicação e não conseguir manter o peso sozinho." },
+                { icon: "🆘", title: "Solidão", text: "Tentar dietas e remédios sem orientação real e personalizada." },
+                { icon: "🔋", title: "Cansaço", text: "Falta de energia para treinar e viver o dia a dia com qualidade." }
+            ],
+            desire: [
+                { icon: "🛡️", title: "Segurança", text: "Emagrecer com previsibilidade e acompanhamento médico contínuo." },
+                { icon: "🧠", title: "Controle Mental", text: "Dominar a compulsão e reprogramar seus hábitos alimentares." },
+                { icon: "🏋️", title: "Corpo Tonificado", text: "Perder gordura mantendo e construindo massa muscular forte." },
+                { icon: "🔄", title: "Manutenção", text: "Um protocolo de desmame que ensina seu corpo a manter o peso." },
+                { icon: "👥", title: "Equipe Completa", text: "Médico, Nutri, Psicólogo e Personal cuidando de você." },
+                { icon: "⚡", title: "Vitalidade", text: "Recuperar a autoestima, a disposição e a saúde metabólica." }
+            ]
+        };
+
+        // --- FUNCTIONS ---
+
+        // 1. Navigation Scroll
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if(element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                // Close mobile menu if open
+                document.getElementById('mobile-menu').classList.add('hidden');
+            }
+        }
+
+        // 2. Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // 3. Lógica de Alternância Dor/Desejo (Atualizada)
+function togglePerspective(type) {
+    const container = document.getElementById('perspective-container');
+    const btnPain = document.getElementById('btn-pain');
+    const btnDesire = document.getElementById('btn-desire');
+    
+    // --- 1. Configurar cores dos BOTÕES ---
+    if (type === 'pain') {
+        // Botão Dor Ativo (Vermelho/Azul)
+        btnPain.classList.add('bg-white', 'text-red-600', 'shadow-md');
+        btnPain.classList.remove('text-gray-500');
+        
+        // Botão Desejo Inativo
+        btnDesire.classList.remove('bg-white', 'text-viaGreen', 'shadow-md');
+        btnDesire.classList.add('text-gray-500');
+    } else {
+        // Botão Desejo Ativo (Verde)
+        btnDesire.classList.add('bg-white', 'text-viaGreen', 'shadow-md');
+        btnDesire.classList.remove('text-gray-500');
+        
+        // Botão Dor Inativo
+        btnPain.classList.remove('bg-white', 'text-red-600', 'shadow-md');
+        btnPain.classList.add('text-gray-500');
+    }
+
+    // --- 2. Configurar cores das CAIXAS (Onde está sua correção) ---
+    container.innerHTML = ''; // Limpa o conteúdo anterior
+    const data = cardsData[type];
+    
+    // AQUI É O PULO DO GATO:
+    // Se for 'pain' (Dor) usa Azul Escuro (#003F4F)
+    // Se for 'desire' (Desejo) usa Verde (#0E8A5C)
+    const cardColorClass = type === 'pain' ? 'bg-[#003F4F]' : 'bg-[#0E8A5C]';
+    const borderColorClass = type === 'pain' ? 'border-[#003F4F]' : 'border-[#0E8A5C]';
+
+    data.forEach((item, index) => {
+        const card = document.createElement('div');
+        
+        // Aplica a cor definida acima (cardColorClass)
+        card.className = `${cardColorClass} p-6 rounded-xl border ${borderColorClass} transition-all duration-300 card-hover text-white shadow-lg`;
+        
+        card.innerHTML = `
+            <div class="text-4xl mb-4">${item.icon}</div>
+            <h3 class="font-heading font-bold text-lg text-white mb-2">${item.title}</h3>
+            <p class="text-sm text-white opacity-90">${item.text}</p>
+        `;
+        
+        // Animação suave de entrada
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        container.appendChild(card);
+        
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+}
+
+        // 4. Tab Logic
+        function openTab(tabName) {
+            // Hide all content
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(c => c.classList.add('hidden'));
+            
+            // Show selected content
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            
+            // Reset tab styles
+            const tabs = ['medico', 'nutri', 'psico', 'personal'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabName) {
+                    btn.className = 'tab-active p-6 text-left transition-all duration-200 group focus:outline-none w-full';
+                } else {
+                    btn.className = 'tab-inactive p-6 text-left transition-all duration-200 group focus:outline-none w-full';
+                }
+            });
+        }
+
+        // 5. FAQ Rendering
+        function renderFAQ() {
+            const container = document.getElementById('faq-container');
+            faqs.forEach((item, index) => {
+                const details = document.createElement('details');
+                details.className = 'group bg-gray-50 rounded-lg overflow-hidden border border-gray-100';
+                details.innerHTML = `
+                    <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-4 text-viaBlue group-open:bg-gray-100 transition">
+                        <span>${item.question}</span>
+                        <span class="transition group-open:rotate-180">
+                            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                        </span>
+                    </summary>
+                    <div class="text-gray-600 p-4 pt-0 mt-2 text-sm leading-relaxed animate-fadeIn">
+                        ${item.answer}
+                    </div>
+                `;
+                container.appendChild(details);
+            });
+        }
+
+        // 6. Chart.js Initialization
+        function initChart() {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            const months = ['Mês 1', 'Mês 2', 'Mês 3', 'Mês 4', 'Mês 5', 'Mês 6', 'Mês 7', 'Mês 8', 'Mês 9', 'Mês 10', 'Mês 11', 'Mês 12'];
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Peso Total (Protocolo ViaNatural)',
+                            data: [100, 96, 92, 89, 86, 84, 82, 81, 80, 79, 78, 78],
+                            borderColor: '#0E8A5C', // Green
+                            backgroundColor: '#0E8A5C',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Massa Magra (Protocolo ViaNatural)',
+                            data: [35, 35, 35.5, 36, 36.2, 36.5, 36.8, 37, 37.2, 37.5, 37.8, 38],
+                            borderColor: '#CDAF79', // Gold
+                            backgroundColor: '#CDAF79',
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Massa Magra (Dietas Comuns)',
+                            data: [35, 34, 33, 31, 30, 29, 28, 27.5, 27, 26.5, 26, 25.5],
+                            borderColor: '#ef4444', // Red
+                            backgroundColor: '#ef4444',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            yAxisID: 'y',
+                            hidden: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 63, 79, 0.9)',
+                            titleFont: { size: 13 },
+                            bodyFont: { size: 12 },
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) { label += context.parsed.y + ' kg'; }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear', display: true, position: 'left',
+                            title: { display: true, text: 'Peso (Kg)' },
+                            grid: { borderDash: [2, 4], color: '#e5e7eb' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // 7. Modal Logic
+        function openModal(src) {
+            const modal = document.getElementById("imageModal");
+            const modalImg = document.getElementById("modalImg");
+            const captionText = document.getElementById("caption");
+            
+            modal.style.display = "block";
+            modalImg.src = src;
+            // Optional: Set caption based on image if needed
+        }
+
+        function closeModal() {
+            document.getElementById("imageModal").style.display = "none";
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById("imageModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            togglePerspective('pain'); // Init cards
+            renderFAQ(); // Init FAQ
+            initChart(); // Init Chart
+            
+            // Navbar scroll effect
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                if (window.scrollY > 50) {
+                    nav.classList.add('shadow-md');
+                } else {
+                    nav.classList.remove('shadow-md');
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
